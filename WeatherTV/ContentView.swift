@@ -12,28 +12,29 @@ struct ContentView: View {
 
     @State private var image = UIImage()
     @State private var animating = false
+    @State private var message = "Hello World"
+
+    private let worker: GifDownloader
+
+    internal init(worker: GifDownloader) {
+        self.worker = worker
+    }
 
     var body: some View {
         VStack {
             if (self.animating) {
                 AnimatedImageView(image)
             }
-            Text("Hello, World!")
+            Text(message)
         }.onAppear {
-            let worker = GifDownloader()
-            worker.fetchFreshGifData { (data, error) in
-                guard error == nil else {
-                    fatalError(error!.localizedDescription)
+            worker.fetchFreshGifData { result in
+                switch result {
+                case .failure(let error):
+                    message = "Failed: \(error)"
+                case .success(let image):
+                    self.image = image
+                    self.animating = true
                 }
-                guard let data = data else {
-                    print("No data... abort!")
-                    return
-                }
-                guard let image = UIImage.gif(data: data) else {
-                    fatalError("Could not create gif UIImage")
-                }
-                self.image = image
-                self.animating = true
             }
         }
     }
@@ -41,6 +42,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView(worker: GifDownloader())
     }
 }

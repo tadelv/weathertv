@@ -7,28 +7,28 @@
 //
 
 import Foundation
+import UIKit
 
 
 final class GifDownloader {
 
+    enum DownloaderError: Error {
+        case invalidData
+    }
+
     static private let gifUrlString = "https://www.arso.gov.si/vreme/napovedi%20in%20podatki/radar_anim.gif"
 
-    func fetchFreshGifData(_ completion: @escaping ((Data?,Error?) -> Void)) {
-        guard let url = URL(string: GifDownloader.gifUrlString) else {
-            fatalError("Could not build url from \(GifDownloader.gifUrlString)")
-        }
+    func fetchFreshGifData(_ completion: @escaping ((Result<UIImage, Error>) -> Void)) {
         DispatchQueue.global(qos: .background).async {
-            do {
-                let data = try Data(contentsOf: url, options: .mappedIfSafe)
+            guard let image = UIImage.gif(url: Self.gifUrlString) else {
                 DispatchQueue.main.async {
-                    completion(data, nil)
+                    completion(.failure(DownloaderError.invalidData))
                 }
-            } catch let error as NSError {
-                DispatchQueue.main.async {
-                    completion(nil, error)
-                }
+                return
             }
-
+            DispatchQueue.main.async {
+                completion(.success(image))
+            }
         }
     }
 }

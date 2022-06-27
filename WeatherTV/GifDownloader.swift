@@ -14,21 +14,29 @@ final class GifDownloader {
 
     enum DownloaderError: Error {
         case invalidData
+        case invalidUrl
     }
 
-    static private let gifUrlString = "https://www.arso.gov.si/vreme/napovedi%20in%20podatki/radar_anim.gif"
+    static private let gifUrlString = "https://meteo.arso.gov.si/uploads/probase/www/observ/radar/si0-rm-anim.gif"
+
+    private let session = URLSession.shared
 
     func fetchFreshGifData(_ completion: @escaping ((Result<UIImage, Error>) -> Void)) {
-        DispatchQueue.global(qos: .background).async {
-            guard let image = UIImage.gif(url: Self.gifUrlString) else {
+        guard let url = URL(string: Self.gifUrlString) else {
+            completion(.failure(DownloaderError.invalidUrl))
+            return
+        }
+        session.dataTask(with: url) { data, response, error in
+            guard let data = data,
+            let image = UIImage.gif(data: data) else {
                 DispatchQueue.main.async {
-                    completion(.failure(DownloaderError.invalidData))
+                    completion(.failure(error ?? DownloaderError.invalidData))
                 }
                 return
             }
             DispatchQueue.main.async {
                 completion(.success(image))
             }
-        }
+        }.resume()
     }
 }

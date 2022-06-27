@@ -1,6 +1,8 @@
 WeatherTV
 ========
 An example of animated gifs on tvOS, using SwiftUI 🚀
+Now also on WatchOS
+
 -------
 
  Out of curiosity I wanted to see what would it be like to see current rain conditions for Slovenia on an Apple TV.  

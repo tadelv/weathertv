@@ -9,9 +9,13 @@
 import SwiftUI
 
 struct WatchView: View {
-    @State var image: UIImage?
-    @State var message: String?
-    @State var index = 0
+
+    @Environment(\.scenePhase) var scenePhase
+
+    @State private var image: UIImage?
+    @State private var message: String?
+    @State private var index = 0
+    @State private var timer: Timer?
 
     private let downloader: GifDownloader
 
@@ -32,21 +36,35 @@ struct WatchView: View {
                     Text(message ?? "")
                 }
             }
-        }.onAppear {
-            downloader.fetchFreshGifData { result in
-                switch result {
-                case .failure(let error):
-                    message = "Failed: \(error)"
-                case .success(let image):
-                    self.image = image
-                    let count = image.images?.count ?? 1
-                    let interval = image.duration / Double(count)
-                    Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
-                        if index < count - 1 {
-                            index += 1
-                        } else {
-                            index = 0
-                        }
+        }.onChange(of: scenePhase) { phase in
+            switch phase {
+            case .active:
+                loadAnimation()
+            case .inactive:
+                timer?.invalidate()
+            default:
+                break
+            }
+        }
+    }
+
+    func loadAnimation() {
+        image = nil
+        index = 0
+        downloader.fetchFreshGifData { result in
+            switch result {
+            case .failure(let error):
+                message = "Failed: \(error)"
+            case .success(let image):
+                self.image = image
+                let count = image.images?.count ?? 1
+                let interval = image.duration / Double(count)
+                timer?.invalidate()
+                timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
+                    if index < count - 1 {
+                        index += 1
+                    } else {
+                        index = 0
                     }
                 }
             }

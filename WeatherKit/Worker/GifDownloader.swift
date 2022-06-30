@@ -10,20 +10,24 @@ import Combine
 import Foundation
 import UIKit
 
-protocol RequestPublisherProviding {
+public protocol RequestPublisherProviding {
     func dataTaskPublisher(for url: URL) -> AnyPublisher<(data: Data, response: URLResponse), URLError>
 }
 
 extension URLSession: RequestPublisherProviding {
-    func dataTaskPublisher(for url: URL) -> AnyPublisher<(data: Data, response: URLResponse), URLError> {
+    public func dataTaskPublisher(for url: URL) -> AnyPublisher<(data: Data, response: URLResponse), URLError> {
         let publisher: DataTaskPublisher = dataTaskPublisher(for: url)
         return publisher.eraseToAnyPublisher()
     }
 }
 
-final class GifDownloader {
+public protocol GifProviding {
+    var gifPublisher: AnyPublisher<UIImage, Error> { get }
+}
 
-    enum DownloaderError: Error {
+public final class GifDownloader: GifProviding {
+
+    public enum DownloaderError: Error {
         case invalidData
         case invalidUrl
     }
@@ -33,30 +37,11 @@ final class GifDownloader {
     private let session = URLSession.shared
     private let publisherProvider: RequestPublisherProviding
 
-    init(provider: RequestPublisherProviding) {
+    public init(provider: RequestPublisherProviding) {
         publisherProvider = provider
     }
 
-    func fetchFreshGifData(_ completion: @escaping ((Result<UIImage, Error>) -> Void)) {
-        guard let url = URL(string: Self.gifUrlString) else {
-            completion(.failure(DownloaderError.invalidUrl))
-            return
-        }
-        session.dataTask(with: url) { data, response, error in
-            guard let data = data,
-            let image = UIImage.gif(data: data) else {
-                DispatchQueue.main.async {
-                    completion(.failure(error ?? DownloaderError.invalidData))
-                }
-                return
-            }
-            DispatchQueue.main.async {
-                completion(.success(image))
-            }
-        }.resume()
-    }
-
-    var gifPublisher: AnyPublisher<UIImage, Error> {
+    public var gifPublisher: AnyPublisher<UIImage, Error> {
         guard let url = URL(string: Self.gifUrlString) else {
             return Fail(error: DownloaderError.invalidUrl)
                 .eraseToAnyPublisher()

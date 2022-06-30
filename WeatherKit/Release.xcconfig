@@ -1,0 +1,28 @@
+//
+//  Release.xcconfig
+//  WeatherKit
+//
+//  Created by Vid Tadel on 6/30/22.
+//  Copyright © 2022 Delta96. All rights reserved.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+#include "debug.xcconfig"
+
+ENABLE_NS_ASSERTIONS = NO
+RUN_CLANG_STATIC_ANALYZER = YES
+
+// -*- OVERRIDES -*-
+
+DEBUG_INFORMATION_FORMAT = dwarf-with-dsym
+COPY_PHASE_STRIP = YES
+ENABLE_TESTABILITY = NO
+ONLY_ACTIVE_ARCH = NO
+GCC_PREPROCESSOR_DEFINITIONS =
+SWIFT_ACTIVE_COMPILATION_CONDITIONS =
+GCC_OPTIMIZATION_LEVEL = s
+SWIFT_COMPILATION_MODE = wholemodule
+SWIFT_OPTIMIZATION_LEVEL = -Owholemodule
+MTL_ENABLE_DEBUG_INFO = NO
+OTHER_SWIFT_FLAGS = 

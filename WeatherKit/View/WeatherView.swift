@@ -9,18 +9,25 @@
 import Combine
 import SwiftUI
 
-struct WatchView: View {
+public struct WeatherView: View {
 
     @Environment(\.scenePhase) var scenePhase
 
     @ObservedObject
     private var viewModel: ViewModel
 
-    internal init(downloader: GifDownloader) {
+    private var ignorePhase = false
+
+    public init(downloader: GifProviding) {
         viewModel = ViewModel(downloader: downloader)
     }
 
-    var body: some View {
+    internal init(downloader: GifProviding, ignorePhase: Bool) {
+        viewModel = ViewModel(downloader: downloader)
+        self.ignorePhase = ignorePhase
+    }
+
+    public var body: some View {
         ZStack {
             if let image = viewModel.image {
                 Image(uiImage: image)
@@ -41,13 +48,17 @@ struct WatchView: View {
             default:
                 break
             }
+        }.onAppear {
+            if ignorePhase {
+                viewModel.loadAnimation()
+            }
         }
     }
 
 
 }
 
-extension WatchView {
+extension WeatherView {
     class ViewModel: ObservableObject {
         @Published
         var image: UIImage?
@@ -59,10 +70,10 @@ extension WatchView {
         private var timer: Timer?
         private var images: [UIImage] = []
 
-        private let downloader: GifDownloader
+        private let downloader: GifProviding
         private var cancellable: AnyCancellable?
 
-        init(downloader: GifDownloader) {
+        init(downloader: GifProviding) {
             self.downloader = downloader
         }
 
@@ -99,8 +110,9 @@ extension WatchView {
     }
 }
 
-struct WatchView_Previews: PreviewProvider {
+struct WeatherView_Previews: PreviewProvider {
     static var previews: some View {
-        WatchView(downloader: GifDownloader(provider: MockProvider()))
+        WeatherView(downloader: MockDownloader(), ignorePhase: true)
+            .previewDevice(.init(rawValue: "Apple Watch - 42mm"))
     }
 }

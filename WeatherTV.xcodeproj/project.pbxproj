@@ -21,9 +21,8 @@
 		1830F85F286DDE5700952B78 /* MockProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1830F85D286DDE5700952B78 /* MockProvider.swift */; };
 		184253B8238A65B8009902B6 /* Gif.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184253B7238A65B8009902B6 /* Gif.swift */; };
 		184253BA238A669D009902B6 /* GifDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184253B9238A669D009902B6 /* GifDownloader.swift */; };
-		184253BC238AECA5009902B6 /* AnimatedImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184253BB238AECA5009902B6 /* AnimatedImageView.swift */; };
+		186F92AB286E0FFA0035266F /* WatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 181210A62866DDDD0041D545 /* WatchView.swift */; };
 		18C2B9F1238990530069E761 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18C2B9F0238990530069E761 /* AppDelegate.swift */; };
-		18C2B9F3238990530069E761 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18C2B9F2238990530069E761 /* ContentView.swift */; };
 		18C2B9F5238990590069E761 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 18C2B9F4238990590069E761 /* Assets.xcassets */; };
 		18C2B9F8238990590069E761 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 18C2B9F7238990590069E761 /* Preview Assets.xcassets */; };
 		18C2B9FB238990590069E761 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 18C2B9F9238990590069E761 /* LaunchScreen.storyboard */; };
@@ -87,10 +86,8 @@
 		1830F85D286DDE5700952B78 /* MockProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockProvider.swift; sourceTree = "<group>"; };
 		184253B7238A65B8009902B6 /* Gif.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gif.swift; sourceTree = "<group>"; };
 		184253B9238A669D009902B6 /* GifDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GifDownloader.swift; sourceTree = "<group>"; };
-		184253BB238AECA5009902B6 /* AnimatedImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedImageView.swift; sourceTree = "<group>"; };
 		18C2B9ED238990530069E761 /* WeatherTV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WeatherTV.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		18C2B9F0238990530069E761 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		18C2B9F2238990530069E761 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		18C2B9F4238990590069E761 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		18C2B9F7238990590069E761 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		18C2B9FA238990590069E761 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -170,14 +167,12 @@
 			isa = PBXGroup;
 			children = (
 				18C2B9F0238990530069E761 /* AppDelegate.swift */,
-				18C2B9F2238990530069E761 /* ContentView.swift */,
 				18C2B9F4238990590069E761 /* Assets.xcassets */,
 				18C2B9F9238990590069E761 /* LaunchScreen.storyboard */,
 				18C2B9FC238990590069E761 /* Info.plist */,
 				18C2B9F6238990590069E761 /* Preview Content */,
 				184253B7238A65B8009902B6 /* Gif.swift */,
 				184253B9238A669D009902B6 /* GifDownloader.swift */,
-				184253BB238AECA5009902B6 /* AnimatedImageView.swift */,
 			);
 			path = WeatherTV;
 			sourceTree = "<group>";
@@ -363,10 +358,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				18C2B9F3238990530069E761 /* ContentView.swift in Sources */,
 				18C2B9F1238990530069E761 /* AppDelegate.swift in Sources */,
 				1830F85E286DDE5700952B78 /* MockProvider.swift in Sources */,
-				184253BC238AECA5009902B6 /* AnimatedImageView.swift in Sources */,
+				186F92AB286E0FFA0035266F /* WatchView.swift in Sources */,
 				184253B8238A65B8009902B6 /* Gif.swift in Sources */,
 				184253BA238A669D009902B6 /* GifDownloader.swift in Sources */,
 			);

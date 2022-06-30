@@ -1,5 +1,5 @@
 //
-//  WatchView.swift
+//  WeatherView.swift
 //  WeatherWatch WatchKit Extension
 //
 //  Created by Vid Tadel on 6/25/22.
@@ -9,7 +9,7 @@
 import Combine
 import SwiftUI
 
-struct WatchView: View {
+struct WeatherView: View {
 
     @Environment(\.scenePhase) var scenePhase
 
@@ -47,7 +47,7 @@ struct WatchView: View {
 
 }
 
-extension WatchView {
+extension WeatherView {
     class ViewModel: ObservableObject {
         @Published
         var image: UIImage?
@@ -99,8 +99,8 @@ extension WatchView {
     }
 }
 
-struct WatchView_Previews: PreviewProvider {
+struct WeatherView_Previews: PreviewProvider {
     static var previews: some View {
-        WatchView(downloader: GifDownloader(provider: MockProvider()))
+        WeatherView(downloader: GifDownloader(provider: MockProvider()))
     }
 }

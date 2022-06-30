@@ -11,7 +11,7 @@ import SwiftUI
 struct WeatherTVApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView(worker: GifDownloader(provider: URLSession.shared))
+            WeatherView(downloader: GifDownloader(provider: URLSession.shared))
         }
     }
 }

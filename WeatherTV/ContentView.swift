@@ -63,23 +63,6 @@ struct ContentView: View {
 }
 
 struct ContentView_Previews: PreviewProvider {
-
-    struct MockProvider: RequestPublisherProviding {
-        func dataTaskPublisher(for url: URL) -> AnyPublisher<(data: Data, response: URLResponse), URLError> {
-            guard let url = Bundle.main.url(forResource: "homer", withExtension: "gif"),
-                  let data = try? Data(contentsOf: url) else {
-                return Fail(error: URLError(.cannotLoadFromNetwork))
-                    .eraseToAnyPublisher()
-            }
-            return Just((data: data, response: URLResponse(url: url,
-                                                           mimeType: nil,
-                                                           expectedContentLength: 0,
-                                                           textEncodingName: nil)))
-            .setFailureType(to: URLError.self)
-            .eraseToAnyPublisher()
-        }
-    }
-
     static var previews: some View {
         ContentView(worker: GifDownloader(provider: MockProvider()))
             .environment(\.scenePhase, .active)

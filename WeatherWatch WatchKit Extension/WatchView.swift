@@ -6,74 +6,101 @@
 //  Copyright © 2022 Delta96. All rights reserved.
 //
 
+import Combine
 import SwiftUI
 
 struct WatchView: View {
 
     @Environment(\.scenePhase) var scenePhase
 
-    @State private var image: UIImage?
-    @State private var message: String?
-    @State private var index = 0
-    @State private var timer: Timer?
-
-    private let downloader: GifDownloader
+    @ObservedObject
+    private var viewModel: ViewModel
 
     internal init(downloader: GifDownloader) {
-        self.downloader = downloader
+        viewModel = ViewModel(downloader: downloader)
     }
 
     var body: some View {
         ZStack {
-            if let images = image?.images,
-               let image = images[index] {
+            if let image = viewModel.image {
                 Image(uiImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
             } else {
                 VStack {
                     ProgressView()
-                    Text(message ?? "")
+                    Text(viewModel.message ?? "")
                 }
             }
         }.onChange(of: scenePhase) { phase in
             switch phase {
             case .active:
-                loadAnimation()
+                viewModel.loadAnimation()
             case .inactive:
-                timer?.invalidate()
+                viewModel.stopAnimation()
             default:
                 break
             }
         }
     }
 
-    func loadAnimation() {
-        image = nil
-        index = 0
-        downloader.fetchFreshGifData { result in
-            switch result {
-            case .failure(let error):
-                message = "Failed: \(error)"
-            case .success(let image):
-                self.image = image
-                let count = image.images?.count ?? 1
-                let interval = image.duration / Double(count)
-                timer?.invalidate()
-                timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
-                    if index < count - 1 {
-                        index += 1
-                    } else {
-                        index = 0
+
+}
+
+extension WatchView {
+    class ViewModel: ObservableObject {
+        @Published
+        var image: UIImage?
+
+        @Published
+        var message: String?
+
+        private var index = 0
+        private var timer: Timer?
+        private var images: [UIImage] = []
+
+        private let downloader: GifDownloader
+        private var cancellable: AnyCancellable?
+
+        init(downloader: GifDownloader) {
+            self.downloader = downloader
+        }
+
+        func loadAnimation() {
+            image = nil
+            index = 0
+            cancellable = downloader.gifPublisher.receive(on: RunLoop.main)
+                .sink { [weak self] value in
+                    if case .failure(let error) = value {
+                        self?.message = "Failed: \(error)"
+                    }
+                } receiveValue: { [weak self] newImage in
+                    guard let self = self else {
+                        return
+                    }
+                    self.images = newImage.images ?? []
+                    let count = newImage.images?.count ?? 1
+                    let interval = newImage.duration / Double(count)
+                    self.timer?.invalidate()
+                    self.timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
+                        if self.index < count - 1 {
+                            self.index += 1
+                        } else {
+                            self.index = 0
+                        }
+                        self.image = self.images[self.index]
                     }
                 }
-            }
+        }
+
+        func stopAnimation() {
+            timer?.invalidate()
         }
     }
 }
 
 struct WatchView_Previews: PreviewProvider {
     static var previews: some View {
-        WatchView(downloader: GifDownloader())
+        WatchView(downloader: GifDownloader(provider: MockProvider()))
     }
 }

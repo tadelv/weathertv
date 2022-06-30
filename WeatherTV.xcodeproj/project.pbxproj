@@ -22,6 +22,7 @@
 		184253B8238A65B8009902B6 /* Gif.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184253B7238A65B8009902B6 /* Gif.swift */; };
 		184253BA238A669D009902B6 /* GifDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184253B9238A669D009902B6 /* GifDownloader.swift */; };
 		186F92AB286E0FFA0035266F /* WatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 181210A62866DDDD0041D545 /* WatchView.swift */; };
+		189E413C286E2AD7006A88AD /* homer.gif in Resources */ = {isa = PBXBuildFile; fileRef = 1830F85A286CE83800952B78 /* homer.gif */; };
 		18C2B9F1238990530069E761 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18C2B9F0238990530069E761 /* AppDelegate.swift */; };
 		18C2B9F5238990590069E761 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 18C2B9F4238990590069E761 /* Assets.xcassets */; };
 		18C2B9F8238990590069E761 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 18C2B9F7238990590069E761 /* Preview Assets.xcassets */; };
@@ -324,6 +325,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				181210952866C6980041D545 /* Preview Assets.xcassets in Resources */,
+				189E413C286E2AD7006A88AD /* homer.gif in Resources */,
 				181210922866C6980041D545 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

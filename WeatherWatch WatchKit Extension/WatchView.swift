@@ -9,18 +9,18 @@
 import Combine
 import SwiftUI
 
-struct WeatherView: View {
+public struct WeatherView: View {
 
     @Environment(\.scenePhase) var scenePhase
 
     @ObservedObject
     private var viewModel: ViewModel
 
-    internal init(downloader: GifDownloader) {
+    public init(downloader: GifProviding) {
         viewModel = ViewModel(downloader: downloader)
     }
 
-    var body: some View {
+    public var body: some View {
         ZStack {
             if let image = viewModel.image {
                 Image(uiImage: image)
@@ -38,10 +38,18 @@ struct WeatherView: View {
                 viewModel.loadAnimation()
             case .inactive:
                 viewModel.stopAnimation()
-            default:
-                break
+            case .background:
+                viewModel.purge()
+            @unknown default:
+              break
             }
         }
+#if os(watchOS)
+        // somehow scenePhase doesn't change on the watch
+        .onAppear {
+          viewModel.loadAnimation()
+        }
+#endif
     }
 
 
@@ -59,14 +67,15 @@ extension WeatherView {
         private var timer: Timer?
         private var images: [UIImage] = []
 
-        private let downloader: GifDownloader
+        private let downloader: GifProviding
         private var cancellable: AnyCancellable?
 
-        init(downloader: GifDownloader) {
+        init(downloader: GifProviding) {
             self.downloader = downloader
         }
 
         func loadAnimation() {
+            message = "Loading"
             image = nil
             index = 0
             cancellable = downloader.gifPublisher.receive(on: RunLoop.main)
@@ -96,11 +105,18 @@ extension WeatherView {
         func stopAnimation() {
             timer?.invalidate()
         }
+
+        func purge() {
+            images = []
+            index = 0
+            image = nil
+            message = "Paused"
+        }
     }
 }
 
 struct WeatherView_Previews: PreviewProvider {
     static var previews: some View {
-        WeatherView(downloader: GifDownloader(provider: MockProvider()))
+        WeatherView(downloader: MockDownloader())
     }
 }

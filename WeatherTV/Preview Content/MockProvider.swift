@@ -8,6 +8,7 @@
 
 import Combine
 import Foundation
+import UIKit
 
 struct MockProvider: RequestPublisherProviding {
     func dataTaskPublisher(for url: URL) -> AnyPublisher<(data: Data, response: URLResponse), URLError> {
@@ -23,4 +24,18 @@ struct MockProvider: RequestPublisherProviding {
         .setFailureType(to: URLError.self)
         .eraseToAnyPublisher()
     }
+}
+
+struct MockDownloader: GifProviding {
+  var gifPublisher: AnyPublisher<UIImage, Error> {
+    guard let url = Bundle.main.url(forResource: "homer", withExtension: "gif"),
+          let data = try? Data(contentsOf: url),
+          let image = UIImage.gif(data: data) else {
+      return Fail(error: URLError(.cannotLoadFromNetwork))
+        .eraseToAnyPublisher()
+    }
+    return Just(image)
+      .setFailureType(to: Error.self)
+      .eraseToAnyPublisher()
+  }
 }

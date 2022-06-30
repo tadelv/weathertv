@@ -6,42 +6,82 @@
 //  Copyright © 2019 Delta96. All rights reserved.
 //
 
+import Combine
 import SwiftUI
 
+extension ContentView {
+    class ViewModel: ObservableObject {
+
+        @Published
+        var image: UIImage?
+
+        @Published
+        var message: String?
+
+        private let worker: GifDownloader
+        private var cancellable: AnyCancellable?
+
+        init(worker: GifDownloader) {
+            self.worker = worker
+        }
+
+        func loadImage() {
+            message = "Loading ..."
+            cancellable =  worker.gifPublisher
+                .receive(on: RunLoop.main)
+                .sink(receiveCompletion: { [weak self] error in
+                    self?.message = "Failed with \(error)"
+                }, receiveValue: { [weak self] image in
+                    self?.image = image
+                })
+        }
+    }
+}
+
 struct ContentView: View {
-
-    @State private var image = UIImage()
-    @State private var animating = false
-    @State private var message = "Hello World"
-
-    private let worker: GifDownloader
+    @ObservedObject
+    private var viewModel: ViewModel
 
     internal init(worker: GifDownloader) {
-        self.worker = worker
+        viewModel = ViewModel(worker: worker)
     }
 
     var body: some View {
-        VStack {
-            if (self.animating) {
+        ZStack {
+            if let image = viewModel.image {
                 AnimatedImageView(image)
-            }
-            Text(message)
-        }.onAppear {
-            worker.fetchFreshGifData { result in
-                switch result {
-                case .failure(let error):
-                    message = "Failed: \(error)"
-                case .success(let image):
-                    self.image = image
-                    self.animating = true
+            } else {
+                VStack {
+                    ProgressView()
+                    Text(viewModel.message ?? "")
                 }
             }
+        }.onAppear {
+            viewModel.loadImage()
         }
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
+
+    struct MockProvider: RequestPublisherProviding {
+        func dataTaskPublisher(for url: URL) -> AnyPublisher<(data: Data, response: URLResponse), URLError> {
+            guard let url = Bundle.main.url(forResource: "homer", withExtension: "gif"),
+                  let data = try? Data(contentsOf: url) else {
+                return Fail(error: URLError(.cannotLoadFromNetwork))
+                    .eraseToAnyPublisher()
+            }
+            return Just((data: data, response: URLResponse(url: url,
+                                                           mimeType: nil,
+                                                           expectedContentLength: 0,
+                                                           textEncodingName: nil)))
+            .setFailureType(to: URLError.self)
+            .eraseToAnyPublisher()
+        }
+    }
+
     static var previews: some View {
-        ContentView(worker: GifDownloader())
+        ContentView(worker: GifDownloader(provider: MockProvider()))
+            .environment(\.scenePhase, .active)
     }
 }

@@ -16,6 +16,7 @@
 		181210A32866C6EC0041D545 /* GifDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184253B9238A669D009902B6 /* GifDownloader.swift */; };
 		181210A42866C6EC0041D545 /* Gif.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184253B7238A65B8009902B6 /* Gif.swift */; };
 		181210A72866DDDD0041D545 /* WatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 181210A62866DDDD0041D545 /* WatchView.swift */; };
+		1830F85B286CE83800952B78 /* homer.gif in Resources */ = {isa = PBXBuildFile; fileRef = 1830F85A286CE83800952B78 /* homer.gif */; };
 		184253B8238A65B8009902B6 /* Gif.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184253B7238A65B8009902B6 /* Gif.swift */; };
 		184253BA238A669D009902B6 /* GifDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184253B9238A669D009902B6 /* GifDownloader.swift */; };
 		184253BC238AECA5009902B6 /* AnimatedImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184253BB238AECA5009902B6 /* AnimatedImageView.swift */; };
@@ -79,6 +80,7 @@
 		181210942866C6980041D545 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		181210962866C6980041D545 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		181210A62866DDDD0041D545 /* WatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchView.swift; sourceTree = "<group>"; };
+		1830F85A286CE83800952B78 /* homer.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = homer.gif; sourceTree = "<group>"; };
 		184253B7238A65B8009902B6 /* Gif.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gif.swift; sourceTree = "<group>"; };
 		184253B9238A669D009902B6 /* GifDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GifDownloader.swift; sourceTree = "<group>"; };
 		184253BB238AECA5009902B6 /* AnimatedImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedImageView.swift; sourceTree = "<group>"; };
@@ -178,6 +180,7 @@
 		18C2B9F6238990590069E761 /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
+				1830F85A286CE83800952B78 /* homer.gif */,
 				18C2B9F7238990590069E761 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
@@ -328,6 +331,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1830F85B286CE83800952B78 /* homer.gif in Resources */,
 				18C2B9FB238990590069E761 /* LaunchScreen.storyboard in Resources */,
 				18C2B9F8238990590069E761 /* Preview Assets.xcassets in Resources */,
 				18C2B9F5238990590069E761 /* Assets.xcassets in Resources */,
@@ -668,6 +672,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 14.6;
 			};
 			name = Debug;
 		};
@@ -688,6 +693,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 14.6;
 			};
 			name = Release;
 		};

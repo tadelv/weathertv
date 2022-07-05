@@ -1,79 +1,122 @@
 //
-//  WatchView.swift
+//  WeatherView.swift
 //  WeatherWatch WatchKit Extension
 //
 //  Created by Vid Tadel on 6/25/22.
 //  Copyright © 2022 Delta96. All rights reserved.
 //
 
+import Combine
 import SwiftUI
 
-struct WatchView: View {
+public struct WeatherView: View {
 
     @Environment(\.scenePhase) var scenePhase
 
-    @State private var image: UIImage?
-    @State private var message: String?
-    @State private var index = 0
-    @State private var timer: Timer?
+    @ObservedObject
+    private var viewModel: ViewModel
 
-    private let downloader: GifDownloader
-
-    internal init(downloader: GifDownloader) {
-        self.downloader = downloader
+    public init(downloader: GifProviding) {
+        viewModel = ViewModel(downloader: downloader)
     }
 
-    var body: some View {
+    public var body: some View {
         ZStack {
-            if let images = image?.images,
-               let image = images[index] {
+            if let image = viewModel.image {
                 Image(uiImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
             } else {
                 VStack {
                     ProgressView()
-                    Text(message ?? "")
+                    Text(viewModel.message ?? "")
                 }
             }
         }.onChange(of: scenePhase) { phase in
             switch phase {
             case .active:
-                loadAnimation()
+                viewModel.loadAnimation()
             case .inactive:
-                timer?.invalidate()
-            default:
-                break
+                viewModel.stopAnimation()
+            case .background:
+                viewModel.purge()
+            @unknown default:
+              break
             }
         }
+#if os(watchOS)
+        // somehow scenePhase doesn't change on the watch
+        .onAppear {
+          viewModel.loadAnimation()
+        }
+#endif
     }
 
-    func loadAnimation() {
-        image = nil
-        index = 0
-        downloader.fetchFreshGifData { result in
-            switch result {
-            case .failure(let error):
-                message = "Failed: \(error)"
-            case .success(let image):
-                self.image = image
-                let count = image.images?.count ?? 1
-                let interval = image.duration / Double(count)
-                timer?.invalidate()
-                timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
-                    if index < count - 1 {
-                        index += 1
-                    } else {
-                        index = 0
+
+}
+
+extension WeatherView {
+    class ViewModel: ObservableObject {
+        @Published
+        var image: UIImage?
+
+        @Published
+        var message: String?
+
+        private var index = 0
+        private var timer: Timer?
+        private var images: [UIImage] = []
+
+        private let downloader: GifProviding
+        private var cancellable: AnyCancellable?
+
+        init(downloader: GifProviding) {
+            self.downloader = downloader
+        }
+
+        func loadAnimation() {
+            message = "Loading"
+            image = nil
+            index = 0
+            cancellable = downloader.gifPublisher.receive(on: RunLoop.main)
+                .sink { [weak self] value in
+                    if case .failure(let error) = value {
+                        self?.message = "Failed: \(error)"
+                    }
+                } receiveValue: { [weak self] newImage in
+                    guard let self = self else {
+                        return
+                    }
+                    self.images = newImage.images ?? []
+                    let count = newImage.images?.count ?? 1
+                    let interval = newImage.duration / Double(count)
+                    self.timer?.invalidate()
+                    self.timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
+                        if self.index < count - 1 {
+                            self.index += 1
+                        } else {
+                            self.index = 0
+                        }
+                        self.image = self.images[self.index]
                     }
                 }
-            }
+        }
+
+        func stopAnimation() {
+            timer?.invalidate()
+        }
+
+        func purge() {
+            images = []
+            index = 0
+            image = nil
+            message = "Paused"
         }
     }
 }
 
-struct WatchView_Previews: PreviewProvider {
+struct WeatherView_Previews: PreviewProvider {
     static var previews: some View {
-        WatchView(downloader: GifDownloader())
+        WeatherView(downloader: MockDownloader())
     }
 }

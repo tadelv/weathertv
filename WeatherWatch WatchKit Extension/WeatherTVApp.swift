@@ -12,7 +12,7 @@ import SwiftUI
 struct WeatherTVApp: App {
     var body: some Scene {
         WindowGroup {
-            WatchView(downloader: GifDownloader())
+            WeatherView(downloader: GifDownloader(provider: URLSession.shared))
         }
     }
 }

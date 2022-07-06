@@ -35,7 +35,7 @@ public struct WeatherView: View {
         }.onChange(of: scenePhase) { phase in
             switch phase {
             case .active:
-                viewModel.loadAnimation()
+                viewModel.runAnimation()
             case .inactive:
                 viewModel.stopAnimation()
             case .background:
@@ -47,7 +47,7 @@ public struct WeatherView: View {
 #if os(watchOS)
         // somehow scenePhase doesn't change on the watch
         .onAppear {
-          viewModel.loadAnimation()
+          viewModel.runAnimation()
         }
 #endif
     }
@@ -65,6 +65,7 @@ extension WeatherView {
 
         private var index = 0
         private var timer: Timer?
+        private var timerInterval: Double = 0
         private var images: [UIImage] = []
 
         private let downloader: GifProviding
@@ -74,10 +75,35 @@ extension WeatherView {
             self.downloader = downloader
         }
 
-        func loadAnimation() {
+        func runAnimation() {
+            if images.isEmpty {
+                loadAnimation()
+            } else {
+                beginAnimating()
+            }
+        }
+
+        private func beginAnimating() {
+            timer?.invalidate()
+            timer = Timer.scheduledTimer(withTimeInterval: timerInterval, repeats: true) { [weak self] _ in
+                guard let self = self else {
+                    return
+                }
+                if self.index < self.images.count - 1 {
+                    self.index += 1
+                } else {
+                    self.index = 0
+                }
+                self.image = self.images[self.index]
+            }
+        }
+
+        private func loadAnimation() {
+            cancellable?.cancel()
             message = "Loading"
             image = nil
             index = 0
+            timerInterval = 1
             cancellable = downloader.gifPublisher.receive(on: RunLoop.main)
                 .sink { [weak self] value in
                     if case .failure(let error) = value {
@@ -88,17 +114,9 @@ extension WeatherView {
                         return
                     }
                     self.images = newImage.images ?? []
-                    let count = newImage.images?.count ?? 1
-                    let interval = newImage.duration / Double(count)
-                    self.timer?.invalidate()
-                    self.timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
-                        if self.index < count - 1 {
-                            self.index += 1
-                        } else {
-                            self.index = 0
-                        }
-                        self.image = self.images[self.index]
-                    }
+                    let count = self.images.count
+                    self.timerInterval = newImage.duration / Double(count)
+                    self.beginAnimating()
                 }
         }
 
